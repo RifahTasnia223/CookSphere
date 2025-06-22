@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>User Profile</h1>
+{% if profile.profile_pic %}
+  <img src="{{ profile.profile_pic.url }}" class="rounded-circle mb-3" width="120" height="120" alt="Profile Picture">
+{% endif %}
+<p><strong>Username:</strong> {{ profile.user.username }}</p>
+<p><strong>Bio:</strong> {{ profile.bio }}</p>
+<p><strong>Location:</strong> {{ profile.location }}</p>
+<p><strong>Birth Date:</strong> {{ profile.birth_date }}</p>
+{% if user == profile.user %}
+  <a class="btn btn-secondary" href="{% url 'social:edit_profile' %}">Edit Profile</a>
+{% endif %}
+{% endblock %}

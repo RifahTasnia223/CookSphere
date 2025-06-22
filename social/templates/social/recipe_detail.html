@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ recipe.title }}</h1>
+<p><strong>Description:</strong> {{ recipe.description }}</p>
+<p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+<p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+<p><strong>Author:</strong> {{ recipe.author.username }}</p>
+<p><strong>Created at:</strong> {{ recipe.created_at }}</p>
+
+<h2>Comments</h2>
+<ul>
+  {% for comment in recipe.comments.all %}
+    <li>{{ comment.author.username }}: {{ comment.text }} ({{ comment.created_at }})</li>
+  {% empty %}
+    <li>No comments yet.</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'social:recipe_list' %}">Back to recipes</a>
+{% endblock %}

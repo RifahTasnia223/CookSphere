@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>All Recipes</h1>
+<ul>
+  {% for recipe in recipes %}
+    <li><a href="{% url 'social:recipe_detail' recipe.id %}">{{ recipe.title }}</a> by {{ recipe.author.username }}</li>
+  {% empty %}
+    <li>No recipes yet.</li>
+  {% endfor %}
+</ul>
+<a href="{% url 'social:create_recipe' %}">Create a new recipe</a>
+{% endblock %}

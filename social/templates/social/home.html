@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="mb-4">CookSphere Feed</h1>
+{% if user.is_authenticated %}
+  <a class="btn btn-primary mb-3" href="{% url 'social:create_recipe' %}">Write Post: New Recipe</a>
+{% else %}
+  <div class="alert alert-info">Please <a href="/accounts/login/">log in</a> or <a href="/accounts/signup/">register</a> to post, like, or comment.</div>
+{% endif %}
+{% for recipe, comment_form in recipe_forms %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="d-flex align-items-center mb-2">
+        {% for profile in author_profiles.values %}
+          {% if profile.user.id == recipe.author.id %}
+            {% if profile.profile_pic %}
+              <a href="{% url 'social:user_profile' recipe.author.username %}">
+                <img src="{{ profile.profile_pic.url }}" class="rounded-circle me-2" width="40" height="40" alt="Profile Picture">
+              </a>
+            {% else %}
+              <a href="{% url 'social:user_profile' recipe.author.username %}">
+                <span class="rounded-circle bg-secondary d-inline-block me-2" style="width:40px;height:40px;"></span>
+              </a>
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        <h6 class="card-subtitle mb-0 text-muted">
+          <a href="{% url 'social:user_profile' recipe.author.username %}" class="text-decoration-none fw-bold">{{ recipe.author.username }}</a>
+          <span class="text-muted small">on {{ recipe.created_at|date:"M d, Y H:i" }}</span>
+        </h6>
+      </div>
+      <h4 class="card-title mt-2">{{ recipe.title }}</h4>
+      <p class="card-text">{{ recipe.description }}</p>
+      <p><strong>Ingredients:</strong> {{ recipe.ingredients }}</p>
+      <p><strong>Instructions:</strong> {{ recipe.instructions }}</p>
+      {% if recipe.image %}
+        <img src="{{ recipe.image.url }}" class="img-fluid rounded mb-2" style="max-height:300px;" alt="Recipe Image">
+      {% endif %}
+      <div class="mb-2">
+        <span class="badge rounded-pill bg-primary px-3 py-2">Likes: {{ recipe.likes.count }}</span>
+        {% if user.is_authenticated %}
+          <form method="post" action="{% url 'social:like_recipe' recipe.id %}" style="display:inline;">
+            {% csrf_token %}
+            <button class="btn btn-outline-success btn-sm" type="submit">
+              {% if recipe.id in liked_ids %}Unlike{% else %}Like{% endif %}
+            </button>
+          </form>
+        {% endif %}
+        {% if user == recipe.author %}
+          <a href="{% url 'social:delete_recipe' recipe.id %}" class="btn btn-danger btn-sm ms-2">Delete</a>
+        {% endif %}
+      </div>
+      <div>
+        <h6>Comments:</h6>
+        <ul class="list-group mb-2">
+          {% for comment in recipe.comments.all %}
+            <li class="list-group-item"><strong>{{ comment.author.username }}:</strong> {{ comment.text }} <span class="text-muted">({{ comment.created_at|date:"M d, Y H:i" }})</span></li>
+          {% empty %}
+            <li class="list-group-item">No comments yet.</li>
+          {% endfor %}
+        </ul>
+        {% if user.is_authenticated %}
+          <form method="post" action="{% url 'social:add_comment' recipe.id %}">
+            {% csrf_token %}
+            <div class="mb-2">
+              <textarea name="text" class="form-control form-control-sm" rows="2" placeholder="Add a comment..."></textarea>
+            </div>
+            <button class="btn btn-primary btn-sm" type="submit">Add Comment</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% empty %}
+  <div class="alert alert-warning">No posts have been made yet.</div>
+{% endfor %}
+{% endblock %}

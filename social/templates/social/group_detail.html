@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ group.name }}</h1>
+<p>{{ group.description }}</p>
+<p>Members: {{ group.members.count }}</p>
+{% if user not in group.members.all %}
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Join Group</button>
+  </form>
+{% else %}
+  <p>You are a member of this group.</p>
+{% endif %}
+<a href="{% url 'social:group_list' %}">Back to groups</a>
+{% endblock %}
